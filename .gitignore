@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Secret files
+secrets.yml
+secrets.yml.*
+**/secrets.yml
+**/secrets.yml.*
+
+# Build folders (optional)
+dist/
+build/
+
+# Logs (optional)
+logs/
+*.log
+
+# OS files (optional)
+.DS_Store
+Thumbs.db
