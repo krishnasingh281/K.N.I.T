@@ -21,7 +21,7 @@ export const recalculatePipeline = (clusterState, io) => {
   activeNodes.sort((a, b) => a.joinedAt - b.joinedAt);
 
   // 3. Hardware-Aware Math: Calculate total cluster VRAM
-  const TOTAL_LAYERS = 80; 
+  const TOTAL_LAYERS = 80; // TODO: Make dynamic based on partner's Python payload
   
   // Extract the numeric VRAM value (e.g., "24GB" -> 24). Default to 8 if parsing fails.
   const nodesWithCapacity = activeNodes.map(node => {
