@@ -1,14 +1,10 @@
-import { RouterProvider } from 'react-router'
-import { Dashboard } from '../features/dashboard/pages/Dashboard'
-import "./App.css"
-import { router } from './app.routes'
+/**
+ * App.jsx — Root component. Mounts RouterProvider only.
+ * No JSX besides wiring; keep this file minimal.
+ */
+import { RouterProvider } from 'react-router-dom';
+import { router } from './app.routes';
 
-const App = () => {
-  return (
-    <>
-      <RouterProvider router={router}/>
-    </>
-  )
-}
+const App = () => <RouterProvider router={router} />;
 
-export default App
+export default App;

@@ -1,81 +1,104 @@
-import { useSelector } from "react-redux";
-import { selectAllNodes } from "../dashboardSlice.js";
-import { useCluster } from "../hooks/useCluster.js";
-import { ServerCard } from "../components/ServerCard";
+/**
+ * Dashboard page — route: /dashboard
+ * Cluster observability view.
+ * Data flow: socket → dashboard.service.js → useCluster hook → Redux → here
+ */
+import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { selectAllNodes } from '../dashboardSlice';
+import { useCluster } from '../hooks/useCluster';
+import { NodeCard } from '../components/NodeCard';
+import { StatCard } from '../components/StatCard';
+import { listVariants, cardVariants } from '../../../shared/lib/motion';
 
 export const Dashboard = () => {
-  // 1. Activate the Orchestrator (Starts the socket listener)
+  // Activate socket listeners → populates Redux store
   useCluster();
 
-  // 2. Grab the perfectly formatted Array of nodes from Redux
-  const nodes = useSelector(selectAllNodes);
+  const nodes       = useSelector(selectAllNodes);
   const assignments = useSelector((state) => state.cluster.assignments);
 
-  // Calculate some quick stats for the header
-  const activeNodes = nodes.filter((n) => n.status === "active").length;
+  const activeNodes = nodes.filter((n) => n.status === 'active' || n.status === 'healthy').length;
+  const deadNodes   = nodes.filter((n) => n.status === 'dead').length;
+
+  // Aggregate VRAM from nodes that carry numeric fields
+  const totalVram = nodes.reduce((acc, n) => acc + (n.vramTotal ?? 0), 0);
+
+  // Layers assigned from pipeline data
+  const layersAssigned = Object.values(assignments).reduce(
+    (acc, a) => acc + (a.endLayer - a.startLayer + 1),
+    0
+  );
 
   return (
-    <div className="min-h-screen bg-slate-950 p-8 md:p-12 font-sans selection:bg-cyan-500/30">
-      <div className="max-w-7xl mx-auto">
-        {/* Dashboard Header */}
-        <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
-              Cluster Observability
-            </h1>
-            <p className="text-slate-400 text-sm">
-              Real-time topology and hardware metrics for the Knit inference
-              engine.
-            </p>
-          </div>
+    <div className="px-8 md:px-10 py-10 max-w-[1200px] mx-auto w-full">
 
-          {/* Quick Stats Pill */}
-          <div className="flex items-center gap-4 bg-slate-900 border border-slate-800 px-5 py-3 rounded-lg shadow-sm">
-            <div className="flex flex-col">
-              <span className="text-xs text-slate-500 font-medium">
-                ACTIVE WORKERS
-              </span>
-              <span className="text-xl font-bold text-cyan-400">
-                {activeNodes}
-              </span>
-            </div>
-            <div className="h-8 w-px bg-slate-800"></div>
-            <div className="flex flex-col">
-              <span className="text-xs text-slate-500 font-medium">
-                TOTAL NODES
-              </span>
-              <span className="text-xl font-bold text-white">
-                {nodes.length}
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* Server Grid */}
-        {nodes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/50">
-            <div className="animate-pulse bg-slate-800 h-12 w-12 rounded-full mb-4 flex items-center justify-center">
-              <span className="text-cyan-500 text-2xl">📡</span>
-            </div>
-            <h3 className="text-slate-300 font-medium text-lg mb-1">
-              Waiting for Workers
-            </h3>
-            <p className="text-slate-500 text-sm">
-              No Python nodes have connected to the Master Node yet.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {nodes.map((node) => (
-              <ServerCard
-                key={node.id}
-                node={node}
-                assignment={assignments[node.id]} // <-- NEW: Pass the math down
-              />
-            ))}
-          </div>
-        )}
+      {/* Page header */}
+      <div className="mb-8">
+        <h1 className="text-lg font-medium text-[var(--text)]">Dashboard</h1>
+        <p className="text-sm text-[var(--text-muted)] mt-0.5">Cluster overview</p>
       </div>
+
+      {/* Summary stats */}
+      <motion.div
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+        variants={listVariants}
+        initial="initial"
+        animate="animate"
+      >
+        <motion.div variants={cardVariants}>
+          <StatCard
+            label="Active Nodes"
+            value={activeNodes}
+            valueColor="var(--accent)"
+          />
+        </motion.div>
+        <motion.div variants={cardVariants}>
+          <StatCard
+            label="Dead Nodes"
+            value={deadNodes}
+            valueColor={deadNodes > 0 ? 'var(--danger)' : 'var(--text)'}
+          />
+        </motion.div>
+        <motion.div variants={cardVariants}>
+          <StatCard
+            label="Total VRAM"
+            value={totalVram > 0 ? `${totalVram} GB` : '—'}
+          />
+        </motion.div>
+        <motion.div variants={cardVariants}>
+          <StatCard
+            label="Layers Assigned"
+            value={layersAssigned > 0 ? layersAssigned : '—'}
+          />
+        </motion.div>
+      </motion.div>
+
+      {/* Node grid */}
+      <div className="mb-4">
+        <h2 className="text-sm font-medium text-[var(--text)]">Nodes</h2>
+      </div>
+
+      {nodes.length === 0 ? (
+        <p className="text-sm text-[var(--text-faint)]">
+          No nodes connected to the master.
+        </p>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
+          variants={listVariants}
+          initial="initial"
+          animate="animate"
+        >
+          {nodes.map((node) => (
+            <NodeCard
+              key={node.id}
+              node={node}
+              assignment={assignments[node.id]}
+            />
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 };

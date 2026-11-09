@@ -1,99 +1,60 @@
-import React, { useState, useRef, useEffect } from 'react';
+/**
+ * ChatWindow — scrollable message list with streaming support.
+ * Consumes useChat hook; renders ChatMessage + ChatInput.
+ * Props: socket (Socket.io instance)
+ */
+import { useEffect, useRef } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useChat } from '../hooks/useChat';
+import { ChatMessage } from './ChatMessage';
+import { ChatInput } from './ChatInput';
 
 export const ChatWindow = ({ socket }) => {
   const { messages, isGenerating, error, sendMessage } = useChat(socket);
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef(null);
+  const listRef = useRef(null);
 
-  // Auto-scroll to the bottom whenever messages change (crucial for streaming tokens)
+  // Auto-scroll on new messages / streaming tokens
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!inputValue.trim() || isGenerating) return;
-    
-    sendMessage(inputValue);
-    setInputValue(''); // Clear input after sending
-  };
-
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-3xl mx-auto bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
-      
-      {/* Header */}
-      <div className="px-6 py-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          Cluster Inference Chat
-        </h2>
-        {isGenerating && (
-          <span className="text-xs font-medium px-2.5 py-1 bg-blue-500/20 text-blue-400 rounded-full">
-            Computing...
-          </span>
-        )}
-      </div>
+    <div className="flex flex-col h-[calc(100vh)]">
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-700">
-        {messages.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-500 text-sm">
-            Cluster is standing by. Enter a prompt to begin the relay.
-          </div>
-        ) : (
-          messages.map((msg, idx) => (
-            <div 
-              key={idx} 
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div 
-                className={`max-w-[80%] rounded-2xl px-5 py-3 text-sm leading-relaxed ${
-                  msg.role === 'user' 
-                    ? 'bg-blue-600 text-white rounded-br-sm shadow-md' 
-                    : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-sm'
-                }`}
-              >
-                {msg.content}
-                {/* Blinking cursor effect for the currently generating AI message */}
-                {isGenerating && msg.role === 'ai' && idx === messages.length - 1 && (
-                  <span className="ml-1 inline-block w-1.5 h-3.5 bg-slate-400 animate-pulse align-middle"></span>
-                )}
-              </div>
-            </div>
-          ))
+      {/* Scrollable messages */}
+      <div
+        ref={listRef}
+        className="flex-1 overflow-y-auto px-10 py-8 flex flex-col gap-5"
+        aria-label="Chat messages"
+        role="log"
+        aria-live="polite"
+        aria-atomic="false"
+      >
+        {messages.length > 0 && (
+          <AnimatePresence initial={false}>
+            {messages.map((msg, idx) => (
+              <ChatMessage
+                key={idx}
+                message={msg}
+                isCurrentlyStreaming={
+                  isGenerating && idx === messages.length - 1
+                }
+              />
+            ))}
+          </AnimatePresence>
         )}
-        
-        {/* Error Banner */}
+
+        {/* Error banner */}
         {error && (
-          <div className="p-3 mb-4 text-sm text-red-400 bg-red-900/20 border border-red-900/50 rounded-lg text-center">
+          <div className="text-sm text-[var(--danger)] border border-[rgba(248,113,113,0.3)] bg-[rgba(248,113,113,0.08)] rounded-lg px-4 py-3">
             {error}
           </div>
         )}
-        
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 bg-slate-800 border-t border-slate-700">
-        <form onSubmit={handleSubmit} className="relative flex items-center">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            disabled={isGenerating || !socket}
-            placeholder={isGenerating ? "Cluster is processing..." : "Type your prompt..."}
-            className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 text-sm rounded-lg pl-4 pr-24 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          />
-          <button
-            type="submit"
-            disabled={!inputValue.trim() || isGenerating || !socket}
-            className="absolute right-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Send
-          </button>
-        </form>
-      </div>
+      {/* Fixed input bar */}
+      <ChatInput onSend={sendMessage} disabled={isGenerating || !socket} />
     </div>
   );
 };
