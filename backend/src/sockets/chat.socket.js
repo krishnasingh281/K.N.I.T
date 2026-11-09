@@ -25,6 +25,10 @@ export const registerChatEvents = (io, socket, clusterState) => {
     }
 
     console.log(`🚀 [Prompt Router] Routing prompt to Node ${headNodeId} (Worker 1)`);
+    
+    // NEW: Lock the cluster state so the fault-tolerance loop knows we are actively generating
+    clusterState.isGenerating = true; 
+    
     io.to(headNodeId).emit("start_inference", { prompt });
     socket.emit("inference_started"); 
   });
@@ -37,6 +41,10 @@ export const registerChatEvents = (io, socket, clusterState) => {
   // 3. Notify UI of completion
   socket.on("inference_complete", () => {
     console.log("✅ [Inference] Generation complete. Notifying UI.");
+    
+    // NEW: Unlock the cluster state so subsequent requests can process safely
+    clusterState.isGenerating = false; 
+    
     io.emit("generation_done");
   });
 };

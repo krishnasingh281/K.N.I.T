@@ -31,6 +31,15 @@ export const registerClusterEvents = (io, socket, clusterState) => {
     console.log("❌ A worker disconnected: " + socket.id);
     if (clusterState.nodes[socket.id]) {
       clusterState.nodes[socket.id].status = "dead";
+
+      // NEW: If the worker is manually closed during an active generation
+      if (clusterState.isGenerating) {
+        console.log("⚠️ Aborting active inference due to manual node disconnect.");
+        clusterState.isGenerating = false;
+        io.emit("prompt_error", { 
+          message: "A worker node disconnected mid-generation. The pipeline has been automatically re-stitched. Please try your prompt again." 
+        });
+      }
     }
 
     io.emit("cluster_update", clusterState.nodes);
@@ -44,6 +53,7 @@ export const startFaultToleranceLoop = (io, clusterState) => {
   setInterval(() => {
     const now = Date.now();
     let stateChanged = false;
+    let nodeDroppedMidInference = false; // NEW: Track if the drop ruins a current run
 
     for (const nodeId in clusterState.nodes) {
       const node = clusterState.nodes[nodeId];
@@ -51,6 +61,11 @@ export const startFaultToleranceLoop = (io, clusterState) => {
         node.status = "dead";
         console.log(`\n[CRITICAL FAULT] Node ${nodeId} dropped offline!`);
         stateChanged = true;
+
+        // NEW: If the heartbeat flatlines while we are actively generating text
+        if (clusterState.isGenerating) {
+          nodeDroppedMidInference = true;
+        }
       }
     }
 
@@ -58,6 +73,16 @@ export const startFaultToleranceLoop = (io, clusterState) => {
       io.emit("cluster_update", clusterState.nodes);
       clusterState.assignments = recalculatePipeline(clusterState, io);
       io.emit("pipeline_rebuilt", clusterState.assignments);
+
+      // NEW: Abort and unlock the UI
+      if (nodeDroppedMidInference) {
+        console.log("⚠️ Aborting active inference due to pipeline collapse.");
+        clusterState.isGenerating = false;
+        
+        io.emit("prompt_error", { 
+          message: "A worker node crashed mid-generation. The pipeline has been automatically re-stitched. Please try your prompt again." 
+        });
+      }
     }
   }, 500);
 };
