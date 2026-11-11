@@ -18,6 +18,7 @@ from transformers import DynamicCache
 class Session:
     cache: DynamicCache = field(default_factory=DynamicCache)
     pos: int = 0  # number of tokens already processed by this stage
+    last_used: float = field(default_factory=time.time)
 
 
 class StageExecutor:
@@ -34,6 +35,7 @@ class StageExecutor:
         self.rotary = inner.rotary_emb.to(self.device)
         self.norm = inner.norm.to(self.device) if self.is_last else None
         self.lm_head = model.lm_head.to(self.device) if self.is_last else None
+        self.dtype = next(self.layers.parameters()).dtype
 
         # Re-index layers locally so this stage's KV cache is compact (0..k-1).
         for i, layer in enumerate(self.layers):
@@ -53,7 +55,7 @@ class StageExecutor:
         """Drop KV entries past new_pos (used when speculative tokens are rejected)."""
         s = self.sessions[sid]
         if new_pos < s.pos:
-            s.cache.crop(new_pos)
+            s.cache.crop(-(s.pos - new_pos))   # negative = number of tokens to remove
             s.pos = new_pos
 
     # ---- forward ------------------------------------------------------------
@@ -61,8 +63,9 @@ class StageExecutor:
     def forward(self, sid: str, x: torch.Tensor) -> torch.Tensor:
         t0 = time.perf_counter()
         s = self.sessions.setdefault(sid, Session())
+        s.last_used = time.time()
         x = x.to(self.device)
-        h = self.embed(x) if self.is_first else x
+        h = self.embed(x) if self.is_first else x.to(self.dtype) 
         T, pos = h.shape[1], s.pos
 
         position_ids = torch.arange(pos, pos + T, device=self.device).unsqueeze(0)
@@ -91,3 +94,13 @@ class StageExecutor:
             torch.cuda.synchronize()
         self.last_compute_ms = (time.perf_counter() - t0) * 1000
         return h
+
+    def drop(self, sid: str):
+        self.sessions.pop(sid, None)
+
+    def reap(self, ttl_s: float) -> int:
+        now = time.time()
+        dead = [k for k, v in list(self.sessions.items()) if now - v.last_used > ttl_s]
+        for k in dead:
+            self.sessions.pop(k, None)
+        return len(dead)

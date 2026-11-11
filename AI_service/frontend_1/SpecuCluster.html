@@ -36,6 +36,7 @@ a{color:inherit}
 .hud{position:fixed; right:28px; bottom:24px; bottom:calc(24px + env(safe-area-inset-bottom,0px)); z-index:20; border:1px solid var(--line); background:var(--panel); padding:12px 16px; min-width:188px; pointer-events:none}
 .hl{font-size:10.5px; color:var(--dim); margin-bottom:8px; display:flex; align-items:center; gap:8px}
 .hl i{width:6px; height:6px; background:var(--mint); border-radius:50%; animation:pulse 1.8s ease-in-out infinite}
+.hud.sim .hl i{background:var(--amber)}
 @keyframes pulse{50%{opacity:.3}}
 .hrow{display:flex; align-items:baseline; gap:8px; font-size:11px; color:var(--dim)}
 .hrow span{flex:1}
@@ -46,6 +47,53 @@ a{color:inherit}
 .lbl{position:absolute; left:0; top:0; font-size:11px; white-space:nowrap; color:var(--ink); transform:translate(-50%,0); will-change:transform}
 .lbl em{font-style:normal; color:var(--dim); margin-left:8px}
 .lbl.off{color:var(--red)}
+
+/* cluster gate */
+.gate{position:fixed; top:64px; top:calc(64px + env(safe-area-inset-top,0px)); right:28px; z-index:25; width:272px; border:1px solid var(--line); background:var(--panel); padding:14px}
+.gate [hidden]{display:none}
+.gj{display:flex; gap:8px; margin-top:10px}
+.gate input{flex:1; min-width:0; background:none; border:1px solid var(--line); color:var(--ink); font:500 12px 'JetBrains Mono',monospace; padding:10px; text-transform:uppercase}
+.gate .btn{padding:10px 14px; cursor:pointer; background:none}
+.gate .btn.pri{background:var(--cyan); width:100%}
+.gc span{display:block; font-size:10.5px; color:var(--dim)}
+.gc b{font:600 20px 'Unbounded',sans-serif; letter-spacing:.02em}
+.gcmd{margin-top:10px; font-size:11px; color:var(--dim); word-break:break-all}
+.gm{margin-top:10px; font-size:11px; color:var(--dim)}
+@media (max-width:700px){ .gate{left:16px; right:16px; width:auto} }
+
+/* cluster controls + chat */
+.gl{display:block; margin-top:10px; font-size:10.5px; color:var(--dim)}
+.gate select{width:100%; margin-top:4px; background:#04070b; border:1px solid var(--line); color:var(--ink); font:500 12px 'JetBrains Mono',monospace; padding:9px}
+.chat{position:fixed; left:28px; bottom:24px; bottom:calc(24px + env(safe-area-inset-bottom,0px)); z-index:26; width:min(600px,calc(100vw - 56px)); height:min(74vh,680px); display:flex; flex-direction:column; border:1px solid var(--line); background:rgba(4,7,11,.92)}
+.chat[hidden]{display:none}
+.chat.min{height:auto}
+.chat.big{width:min(980px,calc(100vw - 56px)); height:calc(100vh - 110px)}
+.ch .hb{display:flex; gap:6px}
+.pv{display:flex; flex-wrap:wrap; gap:6px; padding:8px 10px 0; border-top:1px solid var(--line)}
+.pv[hidden],.xr[hidden]{display:none}
+.chip{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); padding:3px 6px; font-size:11px; color:var(--dim)}
+.chip img{height:26px; width:26px; object-fit:cover}
+.chip button{background:none; border:0; color:var(--ink); cursor:pointer; font-size:14px; line-height:1}
+.thumb{display:block; max-height:110px; max-width:60%; margin-top:6px; border:1px solid var(--line)}
+.fchip{margin-top:6px; font-size:11px; color:var(--dim)}
+.att{cursor:pointer}
+.xr{margin:2px 0 10px; font-size:10.5px; color:var(--dim)}
+.xb{display:flex; height:6px; gap:1px; margin-bottom:6px}
+.xb i{display:block; min-width:0}
+.xl{display:flex; flex-wrap:wrap; gap:4px 14px}
+.xl u{display:inline-block; width:7px; height:7px; margin-right:5px; text-decoration:none}
+.chat.min .cm,.chat.min .cf{display:none}
+.ch{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--line); font-size:11.5px; color:var(--dim)}
+.ch button{background:none; border:1px solid var(--line); color:var(--ink); width:26px; height:24px; cursor:pointer}
+.cm{flex:1; overflow-y:auto; padding:12px 14px; font-size:13.5px}
+.cmsg{padding:6px 0; white-space:pre-wrap; word-break:break-word}
+.cmsg.user{color:var(--cyan)}
+.cmsg.err{color:var(--red)}
+.cf{display:flex; gap:8px; padding:10px; border-top:1px solid var(--line)}
+.cf input{flex:1; min-width:0; background:none; border:1px solid var(--line); color:var(--ink); font:500 12px 'JetBrains Mono',monospace; padding:10px}
+.cf .btn{padding:10px 14px; cursor:pointer; background:none}
+.cf .btn:disabled,.gate .btn:disabled{opacity:.4; cursor:default}
+@media (max-width:700px){ .chat{left:16px; right:16px; width:auto; height:60vh} }
 
 /* sections */
 main{position:relative; z-index:5}
@@ -94,7 +142,8 @@ h2{font:600 clamp(22px,2.6vw,32px)/1.18 'Unbounded',sans-serif; letter-spacing:-
 
 /* cluster panel */
 .cluster{margin-top:22px; border-top:1px solid var(--line)}
-.row{display:grid; grid-template-columns:70px 1fr 40px 74px; gap:12px; align-items:center; padding:11px 0; border-bottom:1px solid var(--line); font-size:12px}
+.row{display:grid; grid-template-columns:96px 1fr 62px 74px; gap:12px; align-items:center; padding:11px 0; border-bottom:1px solid var(--line); font-size:12px}
+.row .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .bar{height:5px; background:rgba(125,200,215,.12); position:relative}
 .bar i{position:absolute; inset:0 auto 0 0; background:var(--cyan); transition:width .6s, background .3s}
 .row.off .bar i{background:var(--red); width:100%!important; opacity:.35}
@@ -121,11 +170,36 @@ footer{margin-top:28px; font-size:11px; color:var(--dim)}
   <nav><a href="#s1">Split</a><a href="#s2">Speculate</a><a href="#s3">Resilience</a><a href="#s4">Repo</a></nav>
 </header>
 
-<div class="hud" aria-label="Simulated cluster metrics">
-  <div class="hl"><i></i>live simulation</div>
-  <div class="hrow"><span>time to first token</span><b id="h-ttft">184</b><u>ms</u></div>
-  <div class="hrow"><span>throughput</span><b id="h-tps">36</b><u>tok/s</u></div>
+<div class="hud sim" id="hud" aria-label="Cluster metrics">
+  <div class="hl"><i></i><span id="h-mode">simulation (no cluster)</span></div>
+  <div class="hrow"><span id="h-l1">time to first token</span><b id="h-ttft">184</b><u id="h-u1">ms</u></div>
+  <div class="hrow"><span id="h-l2">throughput</span><b id="h-tps">36</b><u id="h-u2">tok/s</u></div>
   <div class="hrow"><span>nodes</span><b id="h-n">3/3</b><u></u></div>
+</div>
+
+<div class="gate" id="gate">
+  <div id="g-out">
+    <button class="btn pri" id="g-create" type="button">Create cluster</button>
+    <div class="gj"><input id="g-in" placeholder="KNIT-8821-X" maxlength="14" autocomplete="off" spellcheck="false" aria-label="Cluster code"><button class="btn" id="g-join" type="button">Join</button></div>
+  </div>
+  <div id="g-room" hidden>
+    <div class="gc"><span>cluster code</span><b id="g-code"></b></div>
+    <div class="gcmd">Workers join with: <code id="g-cmd"></code></div>
+    <div id="g-ctl" hidden>
+      <label class="gl" for="g-model">Model</label><select id="g-model"></select>
+      <label class="gl" for="g-n">PCs to use</label><select id="g-n"></select>
+      <div class="gj"><button class="btn pri" id="g-start" type="button">Start cluster</button></div>
+    </div>
+    <div class="gj"><button class="btn" id="g-copy" type="button">Copy code</button><button class="btn" id="g-leave" type="button">Leave</button></div>
+  </div>
+  <div class="gm" id="g-msg">No cluster yet. Showing simulation.</div>
+</div>
+
+<div class="chat" id="chat" hidden>
+  <div class="ch"><span id="c-title">Chat</span><span class="hb"><button id="c-big" type="button" aria-label="Expand chat">&#8599;</button><button id="c-min" type="button" aria-label="Minimize chat">&ndash;</button></span></div>
+  <div class="cm" id="c-log" aria-live="polite"></div>
+  <div class="pv" id="c-pv" hidden></div>
+  <div class="cf"><label class="btn att" for="c-file">Attach</label><input type="file" id="c-file" accept="image/*,.txt,.md,.py,.js,.json,.csv,.log" multiple hidden><input id="c-in" placeholder="Ask the cluster, or drop an image / file here..." autocomplete="off"><button class="btn" id="c-send" type="button">Send</button></div>
 </div>
 
 <main>
@@ -134,14 +208,14 @@ footer{margin-top:28px; font-size:11px; color:var(--dim)}
       <h1 class="hd"><span class="ln"><span>One model.</span></span><span class="ln"><span>Every machine</span></span><span class="ln"><span>you own.</span></span></h1>
       <p class="lead"> K.N.I.T splits a transformer across a GPU, an Apple Silicon NPU and a browser tab, then speculates ahead so the slow nodes never stall the fast ones.</p>
       <div class="cta"><a class="btn pri" href="#s3">Break the cluster</a><a class="btn" href="#s4">View the repo</a></div>
-      <p class="hint">Click any node in the scene to drop it.</p>
+      <p class="hint" id="hint">Click any node in the scene to drop it.</p>
     </div>
   </section>
 
   <section class="s r" id="s1">
     <div class="blk rv">
       <h2>Split by what each node can actually do.</h2>
-      <p>Every node reports live compute and memory bandwidth. Layers are quantized and partitioned in proportion, then repartitioned as conditions change. A throttled browser tab gets fewer layers. An idle GPU gets more.</p>
+      <p>Every node reports its layer range and health to the orchestrator. Layers are partitioned in proportion to capacity, and the scene follows whatever the registry says. A throttled browser tab gets fewer layers. An idle GPU gets more.</p>
       <div class="split" id="split"></div>
       <p class="note">Layers per node, live. The stacks in the scene resize with it.</p>
     </div>
@@ -160,7 +234,7 @@ footer{margin-top:28px; font-size:11px; color:var(--dim)}
   <section class="s r" id="s3">
     <div class="blk rv">
       <h2>Nodes drop. Generation doesn’t.</h2>
-      <p>Drop a node and its layers are handed to the survivors while the loop keeps running. Bring it back and they flow home.</p>
+      <p id="s3p">Drop a node and its layers are handed to the survivors while the loop keeps running. Bring it back and they flow home.</p>
       <div class="cluster" id="cluster"></div>
       <div class="log" id="log"></div>
     </div>
@@ -181,6 +255,8 @@ footer{margin-top:28px; font-size:11px; color:var(--dim)}
 (function(){
 var $=function(s){return document.querySelector(s)};
 var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var ORCH=new URLSearchParams(location.search).get('orch')||'ws://127.0.0.1:8080';
+var LIVE=false, liveCount=0, liveKey='';
 var renderer;
 try{ renderer=new THREE.WebGLRenderer({canvas:$('#gl'),antialias:true}); }
 catch(e){ document.body.classList.add('nogl'); document.querySelectorAll('.rv').forEach(function(n){n.classList.add('in')}); return; }
@@ -208,12 +284,12 @@ var pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAt
 var dust=new THREE.Points(pg,new THREE.PointsMaterial({size:.34,map:GT,color:0x6fc7d4,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending}));
 scene.add(dust);
 
-/* ---------- nodes ---------- */
+/* ---------- nodes (3 scene slots; live mode maps registry stages onto them in layer order) ---------- */
 var N=24;
 var nodes=[
-  {name:'GPU',   pos:new THREE.Vector3(-4.2,-1.6,0),  base:1.0, score:1.0, slab:1.0,  y0:.46, alive:true, count:0},
-  {name:'NPU',   pos:new THREE.Vector3(4.0,-1.7,.4),  base:.55, score:.55, slab:.72, y0:.36, alive:true, count:0},
-  {name:'WebGPU',pos:new THREE.Vector3(.2,-1.0,-3.2), base:.2,  score:.2,  slab:.62, y0:.22, alive:true, count:0}
+  {name:'GPU',   def:'GPU',   pos:new THREE.Vector3(-4.2,-1.6,0),  base:1.0, score:1.0, slab:1.0,  y0:.46, alive:true, count:0, range:null},
+  {name:'NPU',   def:'NPU',   pos:new THREE.Vector3(4.0,-1.7,.4),  base:.55, score:.55, slab:.72, y0:.36, alive:true, count:0, range:null},
+  {name:'WebGPU',def:'WebGPU',pos:new THREE.Vector3(.2,-1.0,-3.2), base:.2,  score:.2,  slab:.62, y0:.22, alive:true, count:0, range:null}
 ];
 function edgeBox(w,h,d,mat,y){
   var g=new THREE.BoxGeometry(w,h,d), m=new THREE.LineSegments(new THREE.EdgesGeometry(g),mat);
@@ -247,6 +323,7 @@ for(var li=0;li<N;li++){
   scene.add(mesh);
   layers.push({mesh:mesh,fill:fill,edge:edge,base:col,node:null,slot:0,cur:new THREE.Vector3(),sc:1,flash:0,wait:0,init:false});
 }
+/* simulation: proportional split over alive nodes */
 function assign(){
   var alive=nodes.filter(function(n){return n.alive});
   var tot=alive.reduce(function(s,n){return s+n.score},0);
@@ -256,6 +333,7 @@ function assign(){
   raw.map(function(r,i){return [r-cnt[i],i]}).sort(function(a,b){return b[0]-a[0]}).slice(0,rem).forEach(function(p){cnt[p[1]]++});
   nodes.forEach(function(n){n.count=0});
   var L=0, moved=0;
+  layers.forEach(function(ly){ly.mesh.visible=true});
   alive.forEach(function(n,i){
     n.count=cnt[i];
     for(var k=0;k<cnt[i];k++){
@@ -264,6 +342,21 @@ function assign(){
       ly.node=n; ly.slot=k; L++;
     }
   });
+  renderPanels();
+  return moved;
+}
+/* live: layers sit on whichever node's registered range holds them (dead nodes keep theirs: the pipeline is broken) */
+function assignLive(){
+  var moved=0;
+  layers.forEach(function(ly,L){
+    var tgt=null;
+    nodes.forEach(function(n){ if(n.range && L>=n.range[0] && L<n.range[1]) tgt=n; });
+    if(!tgt){ ly.node=null; ly.mesh.visible=false; return; }
+    ly.mesh.visible=true;
+    if(ly.node && ly.node!==tgt){ moved++; ly.flash=1; }
+    ly.node=tgt; ly.slot=L-tgt.range[0];
+  });
+  nodes.forEach(function(n){ n.count=n.range?Math.max(0,Math.min(n.range[1],N)-n.range[0]):0; });
   renderPanels();
   return moved;
 }
@@ -307,6 +400,7 @@ function log(msg,bad){
   logLines=logLines.slice(0,4); logEl.innerHTML=logLines.join('');
 }
 function toggle(i){
+  if(LIVE){ log('Live cluster: stop or start a stage process to drop or restore it.'); return; }
   var n=nodes[i];
   if(n.alive && nodes.filter(function(x){return x.alive}).length===1){ log('Last node standing. It stays.',true); return; }
   n.alive=!n.alive;
@@ -317,6 +411,7 @@ function toggle(i){
   else { shake=.35; log(n.name+' lost. '+moved+' layers reassigned in '+ms+' ms. Generation continued.',true); }
 }
 setInterval(function(){
+  if(LIVE) return;
   var alive=nodes.filter(function(n){return n.alive}); if(alive.length<2) return;
   var n=alive[Math.floor(Math.random()*alive.length)];
   n.score=Math.max(.08,Math.min(n.base*1.25,n.base*(.6+Math.random()*.7)));
@@ -335,9 +430,12 @@ function renderPanels(){
   nodes.forEach(function(n,i){
     var r=rows[i]; if(!r) return;
     r.el.className='row'+(n.alive?'':' off');
+    r.nm.textContent=n.name;
     r.bar.style.width=Math.min(100,n.score/1.25*100)+'%';
-    r.sc.textContent=n.alive?n.score.toFixed(2):'off';
-    r.btn.textContent=n.alive?'Drop':'Restore';
+    r.sc.textContent=!n.alive?'off':(LIVE&&n.range?'['+n.range[0]+','+n.range[1]+')':n.score.toFixed(2));
+    r.btn.textContent=LIVE?'Live':(n.alive?'Drop':'Restore');
+    r.btn.disabled=LIVE;
+    r.btn.style.opacity=LIVE?.4:1;
   });
 }
 var rows=[], cl=$('#cluster');
@@ -345,12 +443,241 @@ nodes.forEach(function(n,i){
   var el=document.createElement('div'); el.className='row';
   el.innerHTML='<span class="nm">'+n.name+'</span><span class="bar"><i></i></span><span class="sc"></span><button type="button"></button>';
   cl.appendChild(el);
-  var r={el:el,bar:el.querySelector('.bar i'),sc:el.querySelector('.sc'),btn:el.querySelector('button')};
+  var r={el:el,nm:el.querySelector('.nm'),bar:el.querySelector('.bar i'),sc:el.querySelector('.sc'),btn:el.querySelector('button')};
   r.btn.addEventListener('click',function(){toggle(i)});
   rows.push(r);
 });
 assign(); refreshLinks();
-log('Cluster online. 3 nodes, 24 layers.');
+log('Simulation running. Create or join a cluster to go live.');
+
+/* ---------- live orchestrator ---------- */
+function setMode(live){
+  LIVE=live;
+  $('#hud').className='hud '+(live?'live':'sim');
+  $('#h-mode').textContent=live?'live (orchestrator)':'simulation (no cluster)';
+  $('#h-l1').textContent=live?'layers served':'time to first token';
+  $('#h-u1').textContent=live?'':'ms';
+  $('#h-l2').textContent=live?'sessions':'throughput';
+  $('#h-u2').textContent=live?'':'tok/s';
+  $('#hint').textContent=live?'Live cluster. Stop a stage process to watch it drop.':'Click any node in the scene to drop it.';
+  $('#s3p').textContent=live
+    ? 'This view mirrors the real registry. Kill a stage process and its node goes dark within half a second.'
+    : 'Drop a node and its layers are handed to the survivors while the loop keeps running. Bring it back and they flow home.';
+}
+function applyLive(list){
+  list=list.slice(0,3);
+  var key=JSON.stringify(list.map(function(r){return [r.id,r.status,r.start,r.end,r.capacity]}));
+  var sess=0, served=0;
+  list.forEach(function(r){ if(r.status==='alive'){ sess+=(r.sessions||0); served+=((r.end-r.start)||0); } });
+  liveCount=list.length;
+  $('#h-ttft').textContent=served; $('#h-tps').textContent=sess;
+  $('#h-n').textContent=list.filter(function(r){return r.status==='alive'}).length+'/'+list.length;
+  if(key===liveKey) return;
+  liveKey=key;
+  var prev=nodes.map(function(n){return n.alive});
+  var first=!LIVE;
+  if(first){ setMode(true); log('Connected to orchestrator. '+list.length+' stage(s) registered.'); }
+  nodes.forEach(function(n,i){
+    var r=list[i];
+    if(r){
+      var port=String(r.url||'').split(':').pop();
+      n.name=r.name||((r.device||'node')+':'+port); n.alive=r.status==='alive';
+      n.score=r.capacity||1; n.range=(r.start!=null&&r.end!=null)?[r.start,r.end]:null;
+    } else { n.name=n.def+' (none)'; n.alive=false; n.range=null; n.score=n.base; }
+  });
+  assignLive(); refreshLinks();
+  nodes.forEach(function(n,i){
+    if(!first && prev[i]!==n.alive && n.range){
+      pulse(n,n.alive?0x3de0f0:0xff5d4a);
+      if(n.alive) log(n.name+' is back. Layers ['+n.range[0]+','+n.range[1]+') served again.');
+      else { shake=.35; log(n.name+' stopped heartbeating. Layers ['+n.range[0]+','+n.range[1]+') are down.',true); }
+    }
+  });
+}
+function leaveLive(){
+  if(!LIVE) return;
+  setMode(false); liveKey='';
+  nodes.forEach(function(n){ n.name=n.def; n.alive=true; n.score=n.base; n.range=null; });
+  assign(); refreshLinks();
+  log('Orchestrator disconnected. Back to simulation.',true);
+}
+var ws=null, room=null, token=null, want=false, ok=false, master=false, wcount=-1, status='idle';
+var gMsg=$('#g-msg');
+function say(t,bad){ gMsg.textContent=t; gMsg.style.color=bad?'var(--red)':'var(--dim)'; }
+function store(){ try{ if(room&&token) sessionStorage.setItem('knit',JSON.stringify({code:room,token:token})); else sessionStorage.removeItem('knit'); }catch(e){} }
+function paintGate(){
+  $('#g-out').hidden=!!room; $('#g-room').hidden=!room;
+  if(room){ $('#g-code').textContent=room; $('#g-cmd').textContent='python -m service.agent '+room; }
+}
+function send(o){ if(ws&&ws.readyState===1) ws.send(JSON.stringify(o)); }
+function connectWS(first){
+  var s; ok=false;
+  try{ s=new WebSocket(ORCH); }catch(e){ say('Cannot reach the orchestrator at '+ORCH,true); want=false; return; }
+  ws=s;
+  s.onopen=function(){ first(); };
+  s.onmessage=function(e){
+    var m; try{ m=JSON.parse(e.data); }catch(x){ return; }
+    if(m.type==='catalog'){ setCatalog(m.models); }
+    else if(m.type==='cluster_created'){ ok=true; room=m.code; token=m.token; store(); paintGate(); say('Cluster created. Share the code with your workers.'); }
+    else if(m.type==='joined'){ ok=true; room=m.code; master=!!m.master; if(m.master&&!token){ var sv=null; try{ sv=JSON.parse(sessionStorage.getItem('knit')); }catch(x){} if(sv) token=sv.token; } paintGate(); say((m.master?'Master of ':'Viewing ')+m.code+'.'); }
+    else if(m.type==='error'){
+      say(m.message,true);
+      if(!ok){ room=null; token=null; want=false; store(); paintGate(); try{s.close()}catch(x){} }
+    }
+    else if(m.type==='state' && room){ applyLive(m.nodes||[]); cluster(m); $('#h-mode').textContent='live \u00b7 '+room; }
+  };
+  s.onclose=function(){
+    if(ws!==s) return; ws=null; leaveLive(); resetCluster();
+    if(want&&room){ say('Connection lost. Reconnecting...',true); setTimeout(reconnect,2000); }
+    else if(want){ say('Cannot reach the orchestrator at '+ORCH,true); want=false; }
+  };
+  s.onerror=function(){ try{s.close()}catch(x){} };
+}
+function reconnect(){
+  if(!want||!room||ws) return;
+  connectWS(function(){ send(token?{type:'resume',code:room,token:token}:{type:'subscribe',code:room}); });
+}
+var GW=new URLSearchParams(location.search).get('gw')||'http://127.0.0.1:8000';
+var hist=[], busy=false;
+function setCatalog(list){
+  var sel=$('#g-model'); sel.innerHTML='';
+  list.forEach(function(x){ var o=document.createElement('option'); o.value=x.id; o.textContent=x.name+' ('+x.layers+' layers)'; sel.appendChild(o); });
+}
+function resetCluster(){ status='idle'; wcount=-1; master=false; $('#g-ctl').hidden=true; $('#chat').hidden=true; }
+function cluster(m){
+  var alive=(m.nodes||[]).filter(function(n){return n.status==='alive'}).length, st=m.status||'idle', pr=m.progress||{done:0,total:0};
+  $('#g-ctl').hidden=!master;
+  if(alive!==wcount){
+    wcount=alive; var sel=$('#g-n'), keep=+sel.value; sel.innerHTML='';
+    for(var i=1;i<=Math.max(1,alive);i++){ var o=document.createElement('option'); o.value=i; o.textContent=i+(i===1?' PC':' PCs'); sel.appendChild(o); }
+    sel.value=(keep&&keep<=alive)?keep:(Math.min(alive,3)||1);
+  }
+  var b=$('#g-start'); b.disabled=(st==='loading'||alive<1);
+  b.textContent=st==='loading'?'Loading...':(st==='ready'||st==='degraded')?'Restart with these settings':'Start cluster';
+  if(st==='loading') say('Loading '+(m.model||'model')+': '+pr.done+'/'+pr.total+' nodes ready. First run downloads weights.');
+  else if(st==='ready'){ if(status!=='ready') say('Cluster ready. Run: python -m service.gateway '+room); }
+  else if(st==='degraded') say('A stage is down. Chat resumes when it returns.',true);
+  else if(st==='error') say('Load failed: '+(m.error||'unknown'),true);
+  else if(alive===0) say('Waiting for workers. Run the command above on each PC.');
+  else say(alive+' worker(s) joined. Pick a model and press Start.');
+  var show=(st==='ready'||st==='degraded');
+  if(show&&$('#chat').hidden){ $('#chat').hidden=false; $('#chat').classList.remove('min'); }
+  if(!show) $('#chat').hidden=true;
+  $('#c-send').disabled=busy||st!=='ready';
+  status=st;
+}
+function addMsg(role,text){ var d=document.createElement('div'); d.className='cmsg '+role; d.textContent=text; $('#c-log').appendChild(d); $('#c-log').scrollTop=1e9; return d; }
+var att=[], COL=['#3de0f0','#7dffb2','#c9a6ff','#ff9ec4'];
+function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}); }
+function paintAtt(){
+  var pv=$('#c-pv'); pv.innerHTML=''; pv.hidden=!att.length;
+  att.forEach(function(a,i){
+    var c=document.createElement('span'); c.className='chip';
+    if(a.kind==='img'){ var im=document.createElement('img'); im.src=a.data; im.alt=''; c.appendChild(im); }
+    c.appendChild(document.createTextNode(a.name));
+    var x=document.createElement('button'); x.type='button'; x.textContent='\u00d7'; x.setAttribute('aria-label','Remove '+a.name);
+    x.onclick=function(){ att.splice(i,1); paintAtt(); }; c.appendChild(x); pv.appendChild(c);
+  });
+}
+function addFiles(files){
+  Array.prototype.forEach.call(files,function(f){
+    if(att.length>=4) return;
+    if(f.type.indexOf('image/')===0){
+      var rd=new FileReader();
+      rd.onload=function(){ var im=new Image(); im.onload=function(){
+        var s=Math.min(1,1024/Math.max(im.width,im.height)), c=document.createElement('canvas');
+        c.width=Math.round(im.width*s); c.height=Math.round(im.height*s); c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        att.push({kind:'img',name:f.name||'pasted image',data:c.toDataURL('image/jpeg',.85)}); paintAtt(); }; im.src=rd.result; };
+      rd.readAsDataURL(f);
+    } else if(f.size<2e6){ f.text().then(function(t){ att.push({kind:'txt',name:f.name,data:t.slice(0,12000)}); paintAtt(); }); }
+  });
+}
+function addUser(t,list){
+  var d=addMsg('user',t);
+  list.forEach(function(a){
+    if(a.kind==='img'){ var im=document.createElement('img'); im.src=a.data; im.alt=a.name; im.className='thumb'; d.appendChild(im); }
+    else { var s=document.createElement('div'); s.className='fchip'; s.textContent='file: '+a.name; d.appendChild(s); }
+  });
+}
+function renderX(xr,x){
+  var names=nodes.filter(function(n){return n.range}).map(function(n){return n.name});
+  var sum=x.c.reduce(function(a,b){return a+b},0), net=Math.max(0,x.w-sum), w=Math.max(x.w,1);
+  var h='<div class="xb">';
+  x.c.forEach(function(v,i){ h+='<i style="flex:'+v+' 1 0;background:'+COL[i%4]+'"></i>'; });
+  h+='<i style="flex:'+net+' 1 0;background:#ffb454"></i></div><div class="xl">';
+  x.c.forEach(function(v,i){ h+='<span><u style="background:'+COL[i%4]+'"></u>'+esc(names[i]||('stage '+(i+1)))+' '+Math.round(v/w*100)+'%</span>'; });
+  h+='<span><u style="background:#ffb454"></u>network + overhead '+Math.round(net/w*100)+'%</span><span>'+Math.round(x.w/Math.max(x.n,1))+' ms/token</span></div>';
+  xr.innerHTML=h; xr.hidden=false;
+}
+async function sendChat(){
+  var inp=$('#c-in'), t=inp.value.trim(); if((!t&&!att.length)||busy||status!=='ready') return;
+  var list=att.slice(), imgs=list.filter(function(a){return a.kind==='img'}).map(function(a){return a.data}), content='';
+  list.forEach(function(a){ if(a.kind==='txt') content+='[File: '+a.name+']\n```\n'+a.data+'\n```\n\n'; });
+  content+=(t||'Describe the attached content.');
+  inp.value=''; att=[]; paintAtt(); busy=true; $('#c-send').disabled=true;
+  var um={role:'user',content:content}; if(imgs.length) um.images=imgs;
+  hist.push(um); addUser(t||'(attachment)',list);
+  var el=addMsg('bot',''), xr=document.createElement('div'), full='';
+  xr.className='xr'; xr.hidden=true; $('#c-log').appendChild(xr);
+  try{
+    var r=await fetch(GW+'/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:hist,max_new:256})});
+    if(!r.ok){ var e={}; try{ e=await r.json(); }catch(x){} throw new Error(e.detail||('gateway '+r.status)); }
+    var rd=r.body.getReader(), dec=new TextDecoder(), buf='';
+    for(;;){
+      var x=await rd.read(); if(x.done) break;
+      buf+=dec.decode(x.value,{stream:true}); var parts=buf.split('\n\n'); buf=parts.pop();
+      for(var i=0;i<parts.length;i++){
+        if(parts[i].indexOf('data: ')!==0) continue;
+        var j=JSON.parse(parts[i].slice(6));
+        if(j.error) throw new Error(j.error);
+        if(j.caption) um.content+='\n[Attached image: '+j.caption+']';
+        if(j.t){ full+=j.t; el.textContent=full; $('#c-log').scrollTop=1e9; }
+        if(j.x) renderX(xr,j.x);
+        if(j.done) $('#c-title').textContent='Chat \u00b7 '+j.tok_s.toFixed(1)+' tok/s';
+      }
+    }
+    hist.push({role:'assistant',content:full});
+  }catch(err){
+    var msg=(err instanceof TypeError)?'Gateway not reachable at '+GW+'. Run: python -m service.gateway '+room:err.message;
+    el.textContent=(full?full+' ':'')+'['+msg+']'; el.className+=' err';
+    if(full) hist.push({role:'assistant',content:full}); else hist.pop();
+  }
+  delete um.images;
+  busy=false; $('#c-send').disabled=(status!=='ready');
+}
+$('#c-file').addEventListener('change',function(e){ addFiles(e.target.files); e.target.value=''; });
+$('#c-big').addEventListener('click',function(){ $('#chat').classList.toggle('big'); });
+$('#chat').addEventListener('dragover',function(e){ e.preventDefault(); });
+$('#chat').addEventListener('drop',function(e){ e.preventDefault(); if(e.dataTransfer&&e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+$('#c-in').addEventListener('paste',function(e){
+  var fs=[]; Array.prototype.forEach.call((e.clipboardData&&e.clipboardData.items)||[],function(it){ if(it.kind==='file'){ var f=it.getAsFile(); if(f) fs.push(f); } });
+  if(fs.length){ e.preventDefault(); addFiles(fs); }
+});
+$('#c-send').addEventListener('click',sendChat);
+$('#c-in').addEventListener('keydown',function(e){ if(e.key==='Enter') sendChat(); });
+$('#c-min').addEventListener('click',function(){ $('#chat').classList.toggle('min'); });
+$('#g-start').addEventListener('click',function(){
+  hist=[]; $('#c-log').innerHTML=''; $('#c-title').textContent='Chat';
+  send({type:'start_cluster',model:$('#g-model').value,nodes:+$('#g-n').value});
+});
+$('#g-create').addEventListener('click',function(){
+  if(ws) return; want=true; say('Creating cluster...');
+  connectWS(function(){ send({type:'create_cluster'}); });
+});
+function doJoin(){
+  var c=$('#g-in').value.trim().toUpperCase(); if(!c||ws){ if(!c) say('Enter a cluster code.',true); return; }
+  want=true; say('Joining '+c+'...');
+  connectWS(function(){ send({type:'subscribe',code:c}); });
+}
+$('#g-join').addEventListener('click',doJoin);
+$('#g-in').addEventListener('keydown',function(e){ if(e.key==='Enter') doJoin(); });
+$('#g-copy').addEventListener('click',function(){ try{ navigator.clipboard.writeText(room); say('Code copied.'); }catch(e){ say('Copy failed. Select the code manually.',true); } });
+$('#g-leave').addEventListener('click',function(){
+  want=false; room=null; token=null; store(); paintGate();
+  if(ws){ try{ws.close()}catch(x){} } leaveLive(); resetCluster(); say('Left the cluster. Showing simulation.');
+});
+(function(){ var sv=null; try{ sv=JSON.parse(sessionStorage.getItem('knit')); }catch(e){}
+  if(sv&&sv.code&&sv.token){ want=true; token=sv.token; connectWS(function(){ send({type:'resume',code:sv.code,token:sv.token}); }); } })();
 
 /* ---------- camera rig ---------- */
 var WP=[
@@ -398,7 +725,7 @@ addEventListener('pointermove',function(e){
 var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} })},{threshold:.25});
 document.querySelectorAll('.rv').forEach(function(n){io.observe(n)});
 
-/* ---------- speculative decoding strip (block-wise) ---------- */
+/* ---------- speculative decoding strip (illustrative; not driven by the cluster) ---------- */
 var box=$('#tokens'), accEl=$('#acc');
 var sleep=function(ms){return new Promise(function(r){setTimeout(r,reduce?Math.min(ms,40):ms)})};
 var SENT=[
@@ -435,9 +762,10 @@ async function gen(sent){
 }
 (async function loop(){ var n=0; for(;;){ await gen(SENT[n%SENT.length]); n++; } })();
 
-/* ---------- hud ---------- */
+/* ---------- hud (simulation values; live values are set in applyLive) ---------- */
 var hT=184,hP=36;
 setInterval(function(){
+  if(LIVE) return;
   var tot=nodes.reduce(function(s,n){return s+(n.alive?n.score:0)},0);
   var tT=420-tot*135+(Math.random()-.5)*10, tP=6+tot*17+(Math.random()-.5)*1.4;
   hT+=(tT-hT)*.5; hP+=(tP-hP)*.5;
@@ -464,7 +792,8 @@ function frame(now){
     v3.copy(n.pos).add(new THREE.Vector3(0,-.9,1.0)).project(cam);
     if(v3.z<1){ n.lbl.style.display='block'; n.lbl.style.transform='translate('+((v3.x*.5+.5)*innerWidth).toFixed(1)+'px,'+((-v3.y*.5+.5)*innerHeight).toFixed(1)+'px) translateX(-50%)'; }
     else n.lbl.style.display='none';
-    var lt=on?n.name+'<em>'+n.score.toFixed(2)+'</em>':n.name+'<em>offline</em>';
+    var info=on?(LIVE&&n.range?'['+n.range[0]+','+n.range[1]+')':n.score.toFixed(2)):'offline';
+    var lt=n.name+'<em>'+info+'</em>';
     if(n.lt!==lt){ n.lt=lt; n.lbl.innerHTML=lt; n.lbl.className='lbl'+(on?'':' off'); }
   });
 
@@ -485,6 +814,7 @@ function frame(now){
     ly.mesh.scale.set(ly.sc,1,ly.sc);
     ly.flash=Math.max(0,ly.flash-dt*1.2);
     tmpC.copy(ly.base).lerp(AMB,ly.flash);
+    if(LIVE && !n.alive) tmpC.lerp(RED,.7);
     ly.fill.color.copy(tmpC); ly.edge.color.copy(tmpC);
   });
 

@@ -1,0 +1,23 @@
+syntax = "proto3";
+package knit;
+
+service Stage {
+  rpc Info(Empty) returns (InfoReply);
+  rpc Reset(SessionReq) returns (Ack);
+  rpc Rollback(RollbackReq) returns (Ack);
+  rpc Close(SessionReq) returns (Ack);
+  rpc Forward(Tensor) returns (Tensor);
+}
+
+message Empty {}
+message Ack { bool ok = 1; }
+message SessionReq { string sid = 1; }
+message RollbackReq { string sid = 1; int32 pos = 2; }
+message InfoReply {
+  string model = 1; int32 start = 2; int32 end = 3;
+  bool first = 4; bool last = 5; string device = 6; int32 sessions = 7;
+}
+message Tensor {
+  string sid = 1; string dtype = 2; repeated int32 shape = 3;
+  bytes data = 4; float compute_ms = 5;
+}
